@@ -4,7 +4,6 @@ import os
 import requests
 import json
 import pprint
-import Greynoise
 
 token_hostio = '635a1e072c38a9'
 token_ipinfo = '28e4e00f2aa4b5'
@@ -27,10 +26,10 @@ def request_ipinfo(ip_addr):
     return data
 
 def request_greynoise(ip_addr):
-    url = "https://api.greynoise.io/v2/noise/context/" + ip_addr
-    headers = {"accept": "application/json", "key": token_greynoise}
+    url = "http://www.threatcrowd.org/searchApi/v2/ip/report/"
+    req_params = {"ip": ip_addr}
 
-    response = requests.request("GET", url, headers=headers)
+    response = requests.get(url, params=req_params)
     data = response.json()
 
     return data
@@ -46,12 +45,17 @@ def request_threatcrowd(ip_addr):
     return data
 
 def parseJson(data):
+    ret_str =""
     for key, value in data.items():
         print(str(type(key)))
         if type(value) is dict:
             parseJson(value)
         else:
-            print("{0} : {1}".format(key,value))
+            #ret_str = ret_str + str(key) + " : " + str(value) + "\n"
+            ret_str = ret_str + "{0} : {1}".format(key,value) + "\n"
+            #print("{0} : {1}".format(key,value))
+    
+    return ret_str
 
 if __name__ == '__main__':
     """
