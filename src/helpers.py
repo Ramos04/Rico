@@ -37,7 +37,6 @@ def jsonFlatten(data, ret_str=''):
     if data_type is dict:
         for key, value in data.items():
             if type(value) is dict or type(value) is list:
-                #print('{:15} :'.format(key))
                 ret_str += '{:15} :\n'.format(key)
                 ret_str = jsonFlatten(value, ret_str)
 
@@ -50,10 +49,17 @@ def jsonFlatten(data, ret_str=''):
                 ret_str = jsonFlatten(item, ret_str)
 
             else:
-                #print('{:13}'.format(item))
                 ret_str += '{:13}\n'.format(item)
 
     return ret_str
+
+def asciiArt(text):
+    url = "https://artii.herokuapp.com/make?text=" + text + "&font=big"
+    response = requests.request("GET", url)
+    print(response)
+
+    #data = response.json()
+    #pprint.pprint(data)
 
 class Greynoise:
     def __init__ (self, token):

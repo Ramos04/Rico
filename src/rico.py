@@ -10,20 +10,38 @@ token_hostio = '635a1e072c38a9'
 token_ipinfo = '28e4e00f2aa4b5'
 token_greynoise = 'tKwXOAeKyZIFoPA6IhADhSnPfaGLcvSrW2aYvu0zi70cx0b9arX72O313XuDBkBk'
 
-class WinGreynoise(object):
-    def __init__(self, stdscreen, split_num, text):
+class WinTitle(object):
+    def __init__(self, stdscreen, num_splits, text):
         # get the height and width of screen passed in 
-        #self.screen_height, self.screen_width = stdscreen.getmaxyx()
-        temp_height, temp_width = stdscreen.getmaxyx()
+        full_height, full_width = stdscreen.getmaxyx()
 
-        self.screen_height = int (temp_height)
-        self.screen_width = int (temp_width/split_num)
+        self.screen_height = int (full_height/8)
+        self.screen_width = int (full_width/num_splits)
 
         # lines, columns, start line, start column
-        #self.window = curses.newwin(int(self.screen_height), int(self.screen_width/3), 0, 0)
-        self.window = curses.newwin(self.screen_height+3, self.screen_width-3, 3, 3)
-        self.window.border()
-        self.window.addstr(text)
+        self.window = curses.newwin(self.screen_height, self.screen_width, 0, 0)
+        #self.window.border()
+        self.window.addstr(2, 2, text)
+
+    def display(self):
+        self.window.refresh()
+
+class WinGreynoise(object):
+    def __init__(self, stdscreen, num_splits, text):
+        # get the height and width of screen passed in 
+        full_height, full_width = stdscreen.getmaxyx()
+
+
+        self.screen_height = int (full_height)
+        self.screen_width = int (full_width/num_splits)
+
+        # lines, columns, start line, start column
+        self.window = curses.newwin(self.screen_height, self.screen_width, int(self.screen_height/8), 0)
+        self.window.immedok(True)
+        self.window.box()
+        self.window.refresh()
+        #self.window.border()
+        self.window.addstr(2, 2, text)
 
     def display(self):
         self.window.refresh()
@@ -38,7 +56,7 @@ class WinThreatCrowd(object):
 
         # lines, columns, start line, start column
         #self.window = curses.newwin(int(self.screen_height), 60, 0, 60)
-        self.window = curses.newwin(self.screen_height-3, self.screen_width-3, 3, self.screen_width+3)
+        self.window = curses.newwin(self.screen_height, self.screen_width, 0, 0)
         self.window.border()
         self.window.addstr(text)
 
@@ -49,23 +67,26 @@ class WinThreatCrowd(object):
 class IPRecon(object):
     def __init__(self, stdscreen):
         self.screen = stdscreen
-        greynoise = Greynoise(token_greynoise)
-        gn_results = greynoise.lookup_ip('61.163.145.244')
+        #greynoise = Greynoise(token_greynoise)
+        #gn_results = greynoise.lookup_ip('61.163.145.244')
 
-        threatcrowd = ThreatCrowd()
-        tc_results = threatcrowd.lookup_ip('188.40.75.132')
+        #threatcrowd = ThreatCrowd()
+        #tc_results = threatcrowd.lookup_ip('188.40.75.132')
 
         # set the cursor
         curses.curs_set(0)
+        helpers.asciiArt("GreyNoise")
 
-        gn_win = WinGreynoise(self.screen, 3,gn_results)
-        gn_win.display()
+        #gn_title = WinTitle(self.screen, 3, greynoise_title)
+        #gn_title.display()
+        #gn_win = WinGreynoise(self.screen, 3, "work\nwork\nwork\nfadf\nadfad\ndafa\n")
+        #gn_win.display()
 
-        tc_win = WinThreatCrowd(self.screen, 3, gn_results)
-        tc_win.display()
+        #tc_win = WinThreatCrowd(self.screen, 3, gn_results)
+        #tc_win.display()
 
-        curses.napms(10000)
-        curses.endwin()
+        #curses.napms(3000)
+        #curses.endwin()
 
 if __name__ == "__main__":
     #hostio = request_hostio('hurricanelabs.com')
