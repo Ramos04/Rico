@@ -53,18 +53,33 @@ def jsonFlatten(data, ret_str=''):
 
     return ret_str
 
-def asciiArt(text):
-    url = "https://artii.herokuapp.com/make?text=" + text + "&font=big"
-    response = requests.request("GET", url)
+def jsonList(data, ret_str=''):
+    data_type = type(data)
 
-    data = response.json()
-    pprint.pprint(data)
+    if data_type is dict:
+        for key, value in data.items():
+            if type(value) is dict or type(value) is list:
+                ret_str += '{:15} : |'.format(key)
+                ret_str = jsonFlatten(value, ret_str)
+
+            else:
+                #print('{:15} : {}'.format(key, value))
+                ret_str += '{:15} : {} |'.format(key, value)
+    elif data_type is list:
+        for item in data:
+            if type(item) is dict or type(item) is list:
+                ret_str = jsonFlatten(item, ret_str)
+
+            else:
+                ret_str += '{:13} |'.format(item)
+
+    return list(ret_str.split('|'))
 
 class Greynoise:
     def __init__ (self, token):
         self.token = token
 
-    def lookup_ip(self, ip_addr, ret_json=False):
+    def lookup_ip(self, ip_addr):
         url = "https://api.greynoise.io/v2/noise/context/" + ip_addr
         headers = {
             "accept": "application/json",
@@ -76,17 +91,9 @@ class Greynoise:
         data = response.json()
 
         if response.status_code != 200:
-            print(response.status_code + "\n")
-            pprint.pprint(data)
             return None
 
-        #pprint.pprint(data)
-
-        if ret_json:
-            return data
-
-        #jsonToString(data)
-        return jsonFlatten(data)
+        return data
 
 class IPinfo:
     def __init__ (self, token):
