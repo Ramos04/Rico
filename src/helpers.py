@@ -3,97 +3,64 @@ import requests
 import json
 import pprint
 
-#token_hostio = '635a1e072c38a9'
-#token_ipinfo = '28e4e00f2aa4b5'
-#token_greynoise = 'tKwXOAeKyZIFoPA6IhADhSnPfaGLcvSrW2aYvu0zi70cx0b9arX72O313XuDBkBk'
+class Abuseipdb:
+    def __init__ (self, token):
+        self.token = token
 
-def jsonToString(data, count=0):
-    data_type = type(data)
-    indent_len = 1
+    def lookup_ip(self, ip_addr):
+        url = 'https://api.abuseipdb.com/api/v2/check'
 
-    if data_type is dict:
-        for key, value in data.items():
-            if type(value) is dict or type(value) is list:
-                #print('{}{:13} :'.format(str('\t'*count), key))
-                print('{}{} :'.format(str('\t'*count), key))
-                jsonToString(value, count+1)
+        querystring = {
+            'ipAddress': ip_addr,
+            'maxAgeInDays': '90'
+        }
 
-            else:
-                #print('{}{:13} : {}'.format(str('\t'*count), key, value))
-                print('{}{} : {}'.format(str('\t'*count), key, value))
-    elif data_type is list:
-        for item in data:
-            if type(item) is dict or type(item) is list:
-                jsonToString(item, count+1)
+        headers = {
+            'Accept': 'application/json',
+            'Key': self.token
+        }
 
-            else:
-                #print('{}{:13}'.format(str('\t'*count), item))
-                print('{}{}'.format(str('\t'*count), item))
-    return None
+        response = requests.request(method='GET', url=url, headers=headers, params=querystring)
 
-def jsonFlatten(data, ret_str=''):
-    data_type = type(data)
+        data = response.json()
 
-    if data_type is dict:
-        for key, value in data.items():
-            if type(value) is dict or type(value) is list:
-                ret_str += '{:15} :\n'.format(key)
-                ret_str = jsonFlatten(value, ret_str)
+        print("+---------------+\n|   ABUSEIPDB   |\n+---------------+")
+        pprint.pprint(data)
+        print("\n")
 
-            else:
-                #print('{:15} : {}'.format(key, value))
-                ret_str += '{:15} : {}\n'.format(key, value)
-    elif data_type is list:
-        for item in data:
-            if type(item) is dict or type(item) is list:
-                ret_str = jsonFlatten(item, ret_str)
-
-            else:
-                ret_str += '{:13}\n'.format(item)
-
-    return ret_str
-
-def jsonList(data, ret_str=''):
-    data_type = type(data)
-
-    if data_type is dict:
-        for key, value in data.items():
-            if type(value) is dict or type(value) is list:
-                ret_str += '{:15} : |'.format(key)
-                ret_str = jsonFlatten(value, ret_str)
-
-            else:
-                #print('{:15} : {}'.format(key, value))
-                ret_str += '{:15} : {} |'.format(key, value)
-    elif data_type is list:
-        for item in data:
-            if type(item) is dict or type(item) is list:
-                ret_str = jsonFlatten(item, ret_str)
-
-            else:
-                ret_str += '{:13} |'.format(item)
-
-    return list(ret_str.split('|'))
 
 class Greynoise:
     def __init__ (self, token):
         self.token = token
 
     def lookup_ip(self, ip_addr):
-        url = "https://api.greynoise.io/v2/noise/context/" + ip_addr
+        url = 'https://api.greynoise.io/v2/noise/context/' + ip_addr
         headers = {
-            "accept": "application/json",
-            "key": "tKwXOAeKyZIFoPA6IhADhSnPfaGLcvSrW2aYvu0zi70cx0b9arX72O313XuDBkBk"
+            'accept': 'application/json',
+            'key': self.token
         }
 
         response = requests.request("GET", url, headers=headers)
 
         data = response.json()
 
-        if response.status_code != 200:
-            return None
+        print("+---------------+\n|   GREYNOISE   |\n+---------------+")
+        pprint.pprint(data)
+        print("\n")
 
-        return data
+class HybridAnalysis:
+    def __init__ (self, token):
+        self.token = token
+
+class Hostio:
+    def __init__ (self, token):
+        self.token = token
+
+    def lookup_domain(self, host_name, ret_json=False):
+        response = requests.get('https://host.io/api/full/' + host_name + '?token=' + self.token)
+        data = response.json()
+
+        pprint.pprint(data)
 
 class IPinfo:
     def __init__ (self, token):
@@ -106,36 +73,87 @@ class IPinfo:
         response = requests.request("GET", url)
         data = response.json()
 
-        if response.status_code != 200:
-            print(response.status_code + "\n")
-            pprint.pprint(data)
-            return None
+        print("+--------------+\n|    IP INFO   |\n+--------------+")
+        pprint.pprint(data)
+        print("\n")
 
-
-        if ret_json:
-            return data
-
-        #return jsonToString(data)
-        return jsonFlatten(data)
-
-class Hostio:
+class SecurityTrails:
     def __init__ (self, token):
         self.token = token
 
-    def lookup_ip(self, host_name, ret_json=False):
-        response = requests.get('https://host.io/api/full/' + host_name + '?token=' + self.token)
+    def dns_history(self, domain):
+        import requests
+
+        url = 'https://api.securitytrails.com/v1/history/' + domain + '/dns/a'
+
+        headers = {
+            'accept': 'application/json',
+            'apikey': self.token
+        }
+
+        response = requests.request('GET', url, headers=headers)
         data = response.json()
 
-        if response.status_code != 200:
-            print(response.status_code + "\n")
-            pprint.pprint(data)
-            return None
+        print('+--------------------+\n|   SecurityTrails   |\n +--------------------+')
+        pprint.pprint(data)
+        print('\n')
 
-        if ret_json:
-            return data
+    def history_whois(self, domain):
+        url = 'https://api.securitytrails.com/v1/history/securitytrails.com/whois'
+        headers = {'apikey': self.token}
 
-        #return jsonToString(data)
-        return jsonFlatten(data)
+        response = requests.request('GET', url, headers=headers)
+        data = response.json()
+
+        print('+--------------------+\n|   SecurityTrails   |\n +--------------------+')
+        pprint.pprint(data)
+        print('\n')
+
+    def domain_details(self, domain)
+        url = 'https://api.securitytrails.com/v1/domain/' + domain
+        headers = {
+            'accept': 'application/json',
+            'apikey': self.token
+        }
+
+        response = requests.request('GET', url, headers=headers)
+        data = response.json()
+
+        print('+--------------------+\n|   SecurityTrails   |\n +--------------------+')
+        pprint.pprint(data)
+        print('\n')
+
+    def domain_subdomains(self, domain)
+        data = response.json()
+        url = 'https://api.securitytrails.com/v1/domain/' + domain '/subdomains'
+
+        querystring = {'children_only':'false'}
+
+        headers = {
+            'accept': 'application/json',
+            'apikey': self.token
+        }
+
+        response = requests.request('GET', url, headers=headers, params=querystring)
+        data = response.json()
+
+        print('+--------------------+\n|   SecurityTrails   |\n +--------------------+')
+        pprint.pprint(data)
+        print('\n')
+
+    def domain_tags(self, domain):
+        url = 'https://api.securitytrails.com/v1/domain/oracle.com/tags'
+        headers = {
+            'accept': 'application/json',
+            'apikey': self.token
+        }
+
+        response = requests.request('GET', url, headers=headers)
+        data = response.json()
+
+        print('+--------------------+\n|   SecurityTrails   |\n +--------------------+')
+        pprint.pprint(data)
+        print('\n')
 
 class ThreatCrowd:
     def lookup_ip(self, ip_addr, ret_json=False):
@@ -145,13 +163,4 @@ class ThreatCrowd:
         response = requests.get(url, params=req_params)
         data = response.json()
 
-        if response.status_code != 200:
-            print(response.status_code + "\n")
-            pprint.pprint(data)
-            return None
-
-        if ret_json:
-            return data
-
-        #return jsonToString(data)
-        return jsonFlatten(data)
+        pprint.pprint(data)
