@@ -56,10 +56,9 @@ def jsonFlatten(data, ret_str=''):
 def asciiArt(text):
     url = "https://artii.herokuapp.com/make?text=" + text + "&font=big"
     response = requests.request("GET", url)
-    print(response)
 
-    #data = response.json()
-    #pprint.pprint(data)
+    data = response.json()
+    pprint.pprint(data)
 
 class Greynoise:
     def __init__ (self, token):
