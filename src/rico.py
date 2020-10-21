@@ -48,6 +48,10 @@ class Rico:
 
     def run(self):
         for target in self.targets:
+            print('+----------------------------------------------------------+')
+            print('| {:^56} |'.format('Gathering Info For: ' + target))
+            print('+----------------------------------------------------------+')
+
             if self.reg_ipv4.match(target):
                 self._recon_ip(target)
 
