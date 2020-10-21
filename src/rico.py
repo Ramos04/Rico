@@ -18,69 +18,44 @@ token_securitytrails = 'SWwMySUjJP2Wd5RqVsHRmgjDd46Ym6IZ'
 token_hybridanalysis = 'kgup5cto6262d6539e4t8mrs59007eb6oci2q2vb33b38680supi0183eb504f17'
 
 class Rico:
+    reg_ipv4 = re.compile('^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$')
+    reg_ipv6 = re.compile('(([a-fA-F0-9]{1,4}|):){1,7}([a-fA-F0-9]{1,4}|:)')
+    reg_domain = re.compile('^((?:([a-z0-9]\.|[a-z0-9][a-z0-9\-]{0,61}[a-z0-9])\.)+)([a-z0-9]{2,63}|(?:[a-z0-9][a-z0-9\-]{0,61}[a-z0-9]))\.?$')
+    reg_email = re.compile('[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
+    reg_mac = re.compile('^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$')
+
     def __init__(self, args=None):
         parser = argparse.ArgumentParser()
         parser.add_argument('targets', metavar='N', nargs='+', help='targets')
         self.args = parser.parse_args()
 
-        self._sort_targets(self.args.targets)
+        # set up recon helpers
+        self.targets = self.args.targets
+        self.abuseipdb = Abuseipdb(token_abuseipdb)
+        self.ipinfo = IPinfo(token_ipinfo)
+        self.greynoise = Greynoise(token_greynoise)
+        self.hostio = Hostio(token_hostio)
+        self.securitytrails = SecurityTrails(token_securitytrails)
 
-    def _sort_targets(self, args):
-        '^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$'
+    def _recon_ip(self, target):
+        self.ipinfo.lookup_ip(target)
+        self.greynoise.lookup_ip(target)
+        self.abuseipdb.lookup_ip(target)
 
-        self.targets_ip = []
-        self.targets_mac = []
-        self.targets_email = []
-        self.targets_domain = []
-
-        ipv4 = re.compile('^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$')
-        ipv6 = re.compile('(([a-fA-F0-9]{1,4}|):){1,7}([a-fA-F0-9]{1,4}|:)')
-        domain = re.compile('^((?:([a-z0-9]\.|[a-z0-9][a-z0-9\-]{0,61}[a-z0-9])\.)+)([a-z0-9]{2,63}|(?:[a-z0-9][a-z0-9\-]{0,61}[a-z0-9]))\.?$')
-        email = re.compile('[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
-        mac = re.compile('^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$')
-
-        for item in args:
-            if ipv4.match(item): #or ipv6.match(item):
-                self.targets_ip.append(item)
-            elif domain.match(item):
-                self.targets_domain.append(item)
-            elif mac.match(item):
-                self.targets_mac.append(item)
-            elif email.match(item):
-                self.targets_email.append(item)
-
-    def dump_args(self):
-        print('{}: {}'.format('IP ADDRESSES', self.targets_ip))
-        print('{}: {}'.format('DOMAIN', self.targets_domain))
-        print('{}: {}'.format('MAC ADDRESSES', self.targets_mac))
-        print('{}: {}'.format('EMAIL', self.targets_email))
+    def _recon_domain(self, target):
+        self.hostio.lookup_host(target)
+        self.securitytrails.dns_history(target)
 
     def run(self):
-        if self.targets_ip:
-            abuseipdb = Abuseipdb(token_abuseipdb)
-            ipinfo = IPinfo(token_ipinfo)
-            greynoise = Greynoise(token_greynoise)
+        for target in self.targets:
+            if self.reg_ipv4.match(target):
+                self._recon_ip(target)
 
-            for target in self.targets_ip:
-                ipinfo.lookup_ip(target)
-                greynoise.lookup_ip(target)
-                abuseipdb.lookup_ip(target)
-
-        if self.targets_domain:
-            hostio = Hostio(token_hostio)
-            securitytrails = SecurityTrails(token_securitytrails)
-
-            for target in self.targets_domain:
-                hostio.lookup_host(target)
-                securitytrails.dns_history(target)
-
-        #if self.targets_email:
-
-        #if self.targets_mac:
+            elif self.reg_domain.match(target):
+                self._recon_domain(target)
 
 def main():
     rico = Rico()
-    rico.dump_args()
     rico.run()
 
 
