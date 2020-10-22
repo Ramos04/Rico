@@ -98,8 +98,6 @@ class Greynoise:
             self.results_dict['Actor'] = data['actor']
             self.results_dict['First Seen'] = data['first_seen']
             self.results_dict['Last Seen'] = data['last_seen']
-
-
             self.results_dict['ASN'] = data['metadata']['asn']
             self.results_dict['Category'] = data['metadata']['category']
             self.results_dict['City'] = data['metadata']['city']
@@ -183,25 +181,29 @@ class IPinfo:
 
     def lookup_ip(self, ip_addr):
         self._make_request(ip_addr)
-
         self._print_results()
+
+    def lookup_ip_dict(self, ip_addr):
+        self._make_request(ip_addr)
+
+        return self.results_dict
 
     def _make_request(self, ip_addr):
         url = 'https://ipinfo.io/' + ip_addr + '?token=' + self.token
-        #headers = {'accept': 'application/json'}
+        headers = {'accept': 'application/json'}
 
         response = requests.request("GET", url)
 
         if response.status_code == 200:
             data = response.json()
 
-            self.results_dict['IP Address'] = data['ip']
-            self.results_dict['Hostname'] = data['hostname']
-            self.results_dict['Organization'] = data['org']
             self.results_dict['City'] = data['city']
-            self.results_dict['Region'] = data['region']
             self.results_dict['Country'] = data['country']
+            self.results_dict['IP Address'] = data['ip']
             self.results_dict['Coordinates'] = data['loc']
+            self.results_dict['Organization'] = data['org']
+            self.results_dict['Region'] = data['region']
+            self.results_dict['Timezone'] = data['timezone']
 
             return True
 
