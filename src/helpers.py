@@ -76,6 +76,10 @@ class Greynoise:
         self._make_request(ip_addr)
         self._print_results()
 
+    def lookup_ip_dict(self, ip_addr):
+        self._make_request(ip_addr)
+
+        return self.results_dict
 
     def _make_request(self, ip_addr):
         url = 'https://api.greynoise.io/v2/noise/context/' + ip_addr
