@@ -21,29 +21,31 @@ import curses
 import re, os, sys
 
 class SubWindow():
-    def __init__(self, window, num_splits, num_pos, data):
+    def __init__(self, window, num_splits, num_pos, module, data):
         self.window = window
         height, width = window.getmaxyx()
 
         self.height = height
         self.width = int(width/num_splits)
 
-        self.border_height = 4
+        self.border_height = 3
         self.border_width = self.width
         self.border_col = int(self.width*num_pos)
         self.border_lin = 0
 
-        self.body_height = int(self.height-4)
+        self.body_height = int(self.height-3)
         self.body_width = self.width
         self.body_col = int(self.width*num_pos)
-        self.body_lin = 4
+        self.body_lin = 3
 
+        # set the header of the sub window
         self.header = self.window.derwin(self.border_height,
                                          self.width,
                                          self.border_lin,
                                          self.border_col)
         self.header.border()
 
+        # set the body of the sub
         self.body = self.window.derwin(self.body_height,
                                        self.body_width,
                                        self.body_lin,
@@ -54,6 +56,7 @@ class SubWindow():
         #self.body.addstr(1, 0, '| {:^26} |'.format('GreyNoise'))
         #self.body.addstr(2, 0, '+----------------------------+')
 
+        self.header.addstr(1, int( (self.width/2) - len(module)/2 ), module)
         count = 1
         if data:
             for k1, v1 in data.items():
@@ -104,8 +107,8 @@ class Window():
         self.new_win = curses.newwin(self.height, self.width, 0, 0)
         self.new_win.border()
 
-        self.sub_greynoise = SubWindow(self.new_win, 3, 0, res_greynoise)
-        self.sub_ipinfo = SubWindow(self.new_win, 3, 1, res_ipinfo)
+        self.sub_greynoise = SubWindow(self.new_win, 3, 0, 'Greynoise', res_greynoise)
+        self.sub_ipinfo = SubWindow(self.new_win, 3, 1, 'IP Info', res_ipinfo)
 
         self.new_win.refresh()
         self.sub_greynoise.display()

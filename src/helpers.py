@@ -300,6 +300,68 @@ class SecurityTrails:
         print('\n')
 
 ################################################################################
+#                                  Shodan
+################################################################################
+class Shodan:
+    def __init__ (self, token):
+        self.token = token
+        self.results_dict = {}
+
+    def lookup_ip(self, ip_addr):
+        self._make_request(ip_addr)
+        #self._print_results()
+
+    def lookup_ip_dict(self, ip_addr):
+        self._make_request(ip_addr)
+
+        return self.results_dict
+
+    def _make_request(self, ip_addr):
+        url = 'https://api.shodan.io/shodan/host/' + ip_addr + '?key=' + self.token
+        headers = { 'accept': 'application/json'}
+
+        response = requests.request("GET", url, headers=headers)
+        print(response.status_code)
+
+        #if response.status_code == 200:
+        #    data = response.json()
+        data = response.json()
+        pprint.pprint(data)
+
+        #    return True
+
+        #return False
+
+    """
+    def _print_results(self):
+        print('+----------------------------+')
+        print('| {:^26} |'.format('GreyNoise'))
+        print('+----------------------------+')
+
+        if self.results_dict:
+            for k1, v1 in self.results_dict.items():
+
+                if type(v1) is list:
+                    print('{:15} :'.format(k1))
+                    for item in v1:
+                        if type(item) is dict:
+                            for k2, v2 in item.items():
+                                print(('    {:5} : {}'.format(k2, v2)))
+                        else:
+                            print(('    {}'.format(item)))
+                elif type(v1) is dict:
+                    print('{:15} :'.format(k1))
+                    for k2, v2 in v1.items():
+                        print(('    {:11} :'.format(k2)))
+                        if type(v2) is list:
+                            for item in v2:
+                                print(('         {}'.format(item)))
+                        else:
+                            print(('    {:5} : {}'.format(k2, v2)))
+                else:
+                    print('{:15} : {}'.format(k1, v1))
+    """
+################################################################################
 #                               ThreatCrowd
 ################################################################################
 class ThreatCrowd:
