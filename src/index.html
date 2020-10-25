@@ -1,0 +1,246 @@
+{
+    "query_status": "ok",
+    "data": [
+        {
+            "sha256_hash": "7de2c1bf58bce09eecc70476747d88a26163c3d6bb1d85235c24a558d1f16754",
+            "sha3_384_hash": "139b8890e573e4c759e4904902b3ece1b4b8c1fd7a49fc8ccd482226581c88e4d1ce074f0ab274238a87b273d8dc74e4",
+            "sha1_hash": "77543bde72105ae1a28cc71815d9ea89ea162052",
+            "md5_hash": "c40aead7a31d14e05b2ee4a11849eced",
+            "first_seen": "2020-10-19 09:54:37",
+            "last_seen": null,
+            "file_name": "New Order POA12990120 From Akweni Group.exe",
+            "file_size": 903680,
+            "file_type_mime": "application\/x-dosexec",
+            "file_type": "exe",
+            "reporter": "abuse_ch",
+            "anonymous": 0,
+            "signature": "AZORult",
+            "imphash": "f34d5f2d4577ed6d9ceec516c1f5a744",
+            "tlsh": "AA15491232F50F49F8BE97F9562810918777BA9E513ED24C7D8D30DE4BA2B010A67B27",
+            "ssdeep": "12288:XxaJCK7NVuJfemYEV54zO26bb9A1GKZHNYPzodGCrJ:JJ4+4zkA1GUKzodGCr",
+            "comment": "Malspam distributing AZORult:\n\nHELO: host.noanfair.com\nSending IP: 69.64.34.145\nFrom: akwenigroup@mweb.co.za\nSubject: New Order PO\/A129901\/20 From Akweni Group\nAttachment: New Order POA12990120 From Akweni Group.gz (contains \"New Order POA12990120 From Akweni Group.exe\")\n\nAZORult C2:\nhttp:\/\/185.239.242.174\/owa\/index.php\n",
+            "tags": [
+                "AZORult",
+                "exe"
+            ],
+            "code_sign": null,
+            "delivery_method": "email_attachment",
+            "intelligence": {
+                "clamav": [
+                    "SecuriteInfo.com.Trojan.InjectNET.14.27839.30.UNOFFICIAL"
+                ],
+                "downloads": "56",
+                "uploads": "1",
+                "mail": null
+            },
+            "file_information": [
+                {
+                    "context": "dropped_by_md5",
+                    "value": "6e11af9a2132859a07b369d52ce5ca69"
+                },
+                {
+                    "context": "cape",
+                    "value": "https:\/\/www.capesandbox.com\/analysis\/72842\/"
+                },
+                {
+                    "context": "dropped_by_sha256",
+                    "value": "920f5880797ad30726cd5c3707fbba03f2e3e54de39a306a8903ce08b5301bdc"
+                }
+            ],
+            "yara_rules": null,
+            "vendor_intel": {
+                "CERT-PL_MWDB": {
+                    "detection": "azorult",
+                    "link": "https:\/\/mwdb.cert.pl\/sample\/7de2c1bf58bce09eecc70476747d88a26163c3d6bb1d85235c24a558d1f16754\/"
+                },
+                "YOROI_YOMI": {
+                    "detection": "Malicious File",
+                    "score": "1.00"
+                },
+                "vxCube": {
+                    "verdict": "malware2",
+                    "maliciousness": "100",
+                    "behaviour": [
+                        {
+                            "threat_level": "neutral",
+                            "rule": "Sending a UDP request"
+                        },
+                        {
+                            "threat_level": "neutral",
+                            "rule": "Creating a window"
+                        },
+                        {
+                            "threat_level": "neutral",
+                            "rule": "Unauthorized injection to a recently created process"
+                        },
+                        {
+                            "threat_level": "neutral",
+                            "rule": "Creating a file"
+                        },
+                        {
+                            "threat_level": "neutral",
+                            "rule": "Sending an HTTP POST request"
+                        },
+                        {
+                            "threat_level": "neutral",
+                            "rule": "Creating a file in the %temp% subdirectories"
+                        },
+                        {
+                            "threat_level": "neutral",
+                            "rule": "Deleting a recently created file"
+                        },
+                        {
+                            "threat_level": "neutral",
+                            "rule": "Reading critical registry keys"
+                        },
+                        {
+                            "threat_level": "neutral",
+                            "rule": "Running batch commands"
+                        },
+                        {
+                            "threat_level": "neutral",
+                            "rule": "Creating a process with a hidden window"
+                        },
+                        {
+                            "threat_level": "neutral",
+                            "rule": "Launching a process"
+                        },
+                        {
+                            "threat_level": "suspicious",
+                            "rule": "Stealing user critical data"
+                        }
+                    ]
+                },
+                "CAPE": {
+                    "detection": "Azorult",
+                    "link": "https:\/\/www.capesandbox.com\/analysis\/72842\/"
+                },
+                "Triage": {
+                    "malware_family": "azorult",
+                    "score": "10",
+                    "link": "https:\/\/tria.ge\/reports\/201019-v5h9hvxwee\/",
+                    "tags": [
+                        "trojan",
+                        "infostealer",
+                        "family:azorult",
+                        "spyware",
+                        "discovery"
+                    ],
+                    "signatures": [
+                        {
+                            "signature": "Azorult",
+                            "score": "10"
+                        },
+                        {
+                            "signature": "Deletes itself",
+                            "score": "7"
+                        },
+                        {
+                            "signature": "Loads dropped DLL",
+                            "score": "7"
+                        },
+                        {
+                            "signature": "Reads data files stored by FTP clients",
+                            "score": "7"
+                        },
+                        {
+                            "signature": "Reads user\/profile data of local email clients",
+                            "score": "7"
+                        },
+                        {
+                            "signature": "Reads user\/profile data of web browsers",
+                            "score": "7"
+                        },
+                        {
+                            "signature": "Accesses cryptocurrency files\/wallets, possible credential harvesting",
+                            "score": "6"
+                        },
+                        {
+                            "signature": "Checks installed software on the system",
+                            "score": "6"
+                        },
+                        {
+                            "signature": "JavaScript code in executable",
+                            "score": "6"
+                        },
+                        {
+                            "signature": "Suspicious use of SetThreadContext",
+                            "score": "5"
+                        },
+                        {
+                            "signature": "Checks processor information in registry",
+                            "score": null
+                        },
+                        {
+                            "signature": "Delays execution with timeout.exe",
+                            "score": null
+                        },
+                        {
+                            "signature": "Suspicious behavior: EnumeratesProcesses",
+                            "score": null
+                        },
+                        {
+                            "signature": "Suspicious use of WriteProcessMemory",
+                            "score": null
+                        }
+                    ],
+                    "malware_config": [
+                        {
+                            "extraction": "c2",
+                            "family": "azorult",
+                            "c2": "http:\/\/185.239.242.174\/owa\/index.php"
+                        }
+                    ]
+                },
+                "ReversingLabs": {
+                    "threat_name": "ByteCode-MSIL.Trojan.AgentTesla",
+                    "status": "MALICIOUS",
+                    "first_seen": "2020-10-19 05:14:13",
+                    "scanner_count": "29",
+                    "scanner_match": "20",
+                    "scanner_percent": "68.97"
+                },
+                "Spamhaus_HBL": [
+                    {
+                        "detection": "malicious",
+                        "link": "https:\/\/www.spamhaus.org\/hbl\/"
+                    }
+                ],
+                "UnpacMe": [
+                    {
+                        "sha256_hash": "7de2c1bf58bce09eecc70476747d88a26163c3d6bb1d85235c24a558d1f16754",
+                        "md5_hash": "c40aead7a31d14e05b2ee4a11849eced",
+                        "sha1_hash": "77543bde72105ae1a28cc71815d9ea89ea162052",
+                        "detections": [],
+                        "link": "https:\/\/www.unpac.me\/results\/c6cad7cc-f354-4c93-b8e7-3e13e435bb32\/"
+                    },
+                    {
+                        "sha256_hash": "341f09c6fbcc5b749dee47af2e72dcee3ae399049fb8f8059a4c5311e19a6a93",
+                        "md5_hash": "3f888eb363dcaf2f014850d40a71e081",
+                        "sha1_hash": "2173796dbad1db14e6738d806ce8be7cbbf7c962",
+                        "detections": [
+                            "win_azorult_g1",
+                            "win_azorult_auto"
+                        ],
+                        "link": "https:\/\/www.unpac.me\/results\/c6cad7cc-f354-4c93-b8e7-3e13e435bb32\/"
+                    },
+                    {
+                        "sha256_hash": "4f869eb5d9a49deb5192fa9346ead3a5311fa84cc901cd3ef83fcdc4bc7d9ac3",
+                        "md5_hash": "3b764d2758bde3ef9a7e3436b35428b7",
+                        "sha1_hash": "46d99dd17f600f8590fcadace8af87a06c984adf",
+                        "detections": [],
+                        "link": "https:\/\/www.unpac.me\/results\/c6cad7cc-f354-4c93-b8e7-3e13e435bb32\/"
+                    },
+                    {
+                        "sha256_hash": "a422b3f60537547ed3e01edb44f3ba7fbed612e16b51bb8658416b35dd34b9c0",
+                        "md5_hash": "03455acc48f46d7e7d06efabd6e99caf",
+                        "sha1_hash": "a993ff219de00504a775457e3813a579450f194f",
+                        "detections": [],
+                        "link": "https:\/\/www.unpac.me\/results\/c6cad7cc-f354-4c93-b8e7-3e13e435bb32\/"
+                    }
+                ]
+            },
+            "comments": null
+        }
+    ]
+}
