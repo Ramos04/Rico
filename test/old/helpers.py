@@ -4,6 +4,94 @@ import json
 import pprint
 
 ################################################################################
+#                                   MalwareBazaar
+################################################################################
+class MalwareBazaar:
+    def __init__ (self):
+        self.token = 'token'
+
+    def lookup_domain(self, file_hash):
+        print(file_hash)
+        url = 'https://mb-api.abuse.ch/api/v1/'
+
+        query = {
+            'query': 'get_info',
+            'hash': file_hash
+        }
+
+        response = requests.post(url, data=query, timeout=15)
+
+        if response.status_code == 200:
+            data = response.json()
+
+            return data
+
+        return False
+
+################################################################################
+#                                   HostIO
+################################################################################
+class Hostio:
+    def __init__ (self, token):
+        self.token = token
+
+    def lookup_domain(self, host_name, ret_json=False):
+        response = requests.get('https://host.io/api/full/' + host_name + '?token=' + self.token)
+        data = response.json()
+
+        print("+---------------+\n|    HOSTIO     |\n+---------------+")
+        pprint.pprint(data)
+        print("\n")
+        pprint.pprint(data)
+
+################################################################################
+#                                   IPInfo
+################################################################################
+class IPinfo:
+    def __init__ (self, token):
+        self.token = token
+        self.results_dict = {}
+
+    def lookup_ip(self, ip_addr):
+        self._make_request(ip_addr)
+        self._print_results()
+
+    def lookup_ip_dict(self, ip_addr):
+        self._make_request(ip_addr)
+
+        return self.results_dict
+
+    def _make_request(self, ip_addr):
+        url = 'https://ipinfo.io/' + ip_addr + '?token=' + self.token
+        headers = {'accept': 'application/json'}
+
+        response = requests.request("GET", url)
+
+        if response.status_code == 200:
+            data = response.json()
+
+            self.results_dict['City'] = data['city']
+            self.results_dict['Country'] = data['country']
+            self.results_dict['IP Address'] = data['ip']
+            self.results_dict['Coordinates'] = data['loc']
+            self.results_dict['Organization'] = data['org']
+            self.results_dict['Region'] = data['region']
+            self.results_dict['Timezone'] = data['timezone']
+
+            return True
+
+        return False
+
+    def _print_results(self):
+        print('+----------------------------+')
+        print('| {:^26} |'.format('IPInfo'))
+        print('+----------------------------+')
+
+        if self.results_dict:
+            for key, value in self.results_dict.items():
+                print('{:15} : {}'.format(key, value))
+
+################################################################################
 #                                   AbuseIPDB
 ################################################################################
 class Abuseipdb:
@@ -13,7 +101,7 @@ class Abuseipdb:
 
     def lookup_ip(self, ip_addr):
         self._make_request(ip_addr)
-        self._print_results()
+        #self._print_results()
 
     def _make_request(self, ip_addr):
         url = 'https://api.abuseipdb.com/api/v2/check'
@@ -49,7 +137,7 @@ class Abuseipdb:
             return True
 
         return False
-
+    """
     def _print_results(self):
         print('+----------------------------+')
         print('| {:^26} |'.format('AbuseIP DB'))
@@ -63,7 +151,7 @@ class Abuseipdb:
                             print(('    {}'.format(item)))
                 else:
                     print('{:15} : {}'.format(key, value))
-
+    """
 ################################################################################
 #                                   GreyNoise
 ################################################################################
@@ -76,6 +164,10 @@ class Greynoise:
         self._make_request(ip_addr)
         self._print_results()
 
+    def lookup_ip_dict(self, ip_addr):
+        self._make_request(ip_addr)
+
+        return self.results_dict
 
     def _make_request(self, ip_addr):
         url = 'https://api.greynoise.io/v2/noise/context/' + ip_addr
@@ -94,8 +186,6 @@ class Greynoise:
             self.results_dict['Actor'] = data['actor']
             self.results_dict['First Seen'] = data['first_seen']
             self.results_dict['Last Seen'] = data['last_seen']
-
-
             self.results_dict['ASN'] = data['metadata']['asn']
             self.results_dict['Category'] = data['metadata']['category']
             self.results_dict['City'] = data['metadata']['city']
@@ -147,161 +237,17 @@ class Greynoise:
                     print('{:15} : {}'.format(k1, v1))
 
 ################################################################################
-#                               Hybrid Analysis
-################################################################################
-class HybridAnalysis:
-    def __init__ (self, token):
-        self.token = token
-
-################################################################################
-#                                   HostIO
-################################################################################
-class Hostio:
-    def __init__ (self, token):
-        self.token = token
-
-    def lookup_domain(self, host_name, ret_json=False):
-        response = requests.get('https://host.io/api/full/' + host_name + '?token=' + self.token)
-        data = response.json()
-
-        print("+---------------+\n|    HOSTIO     |\n+---------------+")
-        pprint.pprint(data)
-        print("\n")
-        pprint.pprint(data)
-
-################################################################################
-#                                   IPInfo
-################################################################################
-class IPinfo:
-    def __init__ (self, token):
-        self.token = token
-        self.results_dict = {}
-
-    def lookup_ip(self, ip_addr):
-        self._make_request(ip_addr)
-
-        self._print_results()
-
-    def _make_request(self, ip_addr):
-        url = 'https://ipinfo.io/' + ip_addr + '?token=' + self.token
-        #headers = {'accept': 'application/json'}
-
-        response = requests.request("GET", url)
-
-        if response.status_code == 200:
-            data = response.json()
-
-            self.results_dict['IP Address'] = data['ip']
-            self.results_dict['Hostname'] = data['hostname']
-            self.results_dict['Organization'] = data['org']
-            self.results_dict['City'] = data['city']
-            self.results_dict['Region'] = data['region']
-            self.results_dict['Country'] = data['country']
-            self.results_dict['Coordinates'] = data['loc']
-
-            return True
-
-        return False
-
-    def _print_results(self):
-        print('+----------------------------+')
-        print('| {:^26} |'.format('IPInfo'))
-        print('+----------------------------+')
-
-        if self.results_dict:
-            for key, value in self.results_dict.items():
-                print('{:15} : {}'.format(key, value))
-
-################################################################################
 #                                SecurityTrails
 ################################################################################
-class SecurityTrails:
-    def __init__ (self, token):
-        self.token = token
 
-    def dns_history(self, domain):
-        import requests
+################################################################################
+#                                  Shodan
+################################################################################
 
-        url = 'https://api.securitytrails.com/v1/history/' + domain + '/dns/a'
-
-        headers = {
-            'accept': 'application/json',
-            'apikey': self.token
-        }
-
-        response = requests.request('GET', url, headers=headers)
-        data = response.json()
-
-        print('+--------------------+\n|   SecurityTrails   |\n +--------------------+')
-        pprint.pprint(data)
-        print('\n')
-
-    def history_whois(self, domain):
-        url = 'https://api.securitytrails.com/v1/history/securitytrails.com/whois'
-        headers = {'apikey': self.token}
-
-        response = requests.request('GET', url, headers=headers)
-        data = response.json()
-
-        print('+--------------------+\n|   SecurityTrails   |\n +--------------------+')
-        pprint.pprint(data)
-        print('\n')
-
-    def domain_details(self, domain):
-        url = 'https://api.securitytrails.com/v1/domain/' + domain
-        headers = {
-            'accept': 'application/json',
-            'apikey': self.token
-        }
-
-        response = requests.request('GET', url, headers=headers)
-        data = response.json()
-
-        print('+--------------------+\n|   SecurityTrails   |\n +--------------------+')
-        pprint.pprint(data)
-        print('\n')
-
-    def domain_subdomains(self, domain):
-        data = response.json()
-        url = 'https://api.securitytrails.com/v1/domain/' + domain + '/subdomains'
-
-        querystring = {'children_only':'false'}
-
-        headers = {
-            'accept': 'application/json',
-            'apikey': self.token
-        }
-
-        response = requests.request('GET', url, headers=headers, params=querystring)
-        data = response.json()
-
-        print('+--------------------+\n|   SecurityTrails   |\n +--------------------+')
-        pprint.pprint(data)
-        print('\n')
-
-    def domain_tags(self, domain):
-        url = 'https://api.securitytrails.com/v1/domain/oracle.com/tags'
-        headers = {
-            'accept': 'application/json',
-            'apikey': self.token
-        }
-
-        response = requests.request('GET', url, headers=headers)
-        data = response.json()
-
-        print('+--------------------+\n|   SecurityTrails   |\n +--------------------+')
-        pprint.pprint(data)
-        print('\n')
+################################################################################
+#                               Hybrid Analysis
+################################################################################
 
 ################################################################################
 #                               ThreatCrowd
 ################################################################################
-class ThreatCrowd:
-    def lookup_ip(self, ip_addr, ret_json=False):
-        url = 'http://www.threatcrowd.org/searchApi/v2/ip/report/'
-        req_params = {'ip': ip_addr}
-
-        response = requests.get(url, params=req_params)
-        data = response.json()
-
-        pprint.pprint(data)
