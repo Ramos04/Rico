@@ -36,7 +36,7 @@ def main():
         elif reg_domain.match(target):
             targets['domain'].append(target)
 
-    manager = Manager(tokens, targets)
+    manager = Manager(tokens, args, targets)
     manager.initialize()
     manager.run()
 
@@ -45,6 +45,8 @@ def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('targets', metavar='TARGETS', nargs='+',
                         help='targets to perform reconnaissance on')
+    parser.add_argument("-o", '--output', default="T", choices=('T', 'G'),
+                        help="set the output")
     parser.add_argument('-d', '--debug', action='store_true',
                         help="activate debug mode")
 
