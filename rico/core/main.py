@@ -13,8 +13,10 @@ reg_email = re.compile('[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`
 reg_mac = re.compile('^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$')
 
 def main():
+    #Debug.debug_log()
     # get api tokens
     tokens = Config.tokens
+    #pprint.pprint(tokens)
 
     # read in arguments
     args = parse_arguments()
@@ -34,10 +36,12 @@ def main():
         elif reg_domain.match(target):
             targets['domain'].append(target)
 
-    manager = Manager(targets)
+    manager = Manager(tokens, targets)
     manager.initialize()
+    manager.run()
 
 def parse_arguments():
+    #Debug.debug_log()
     parser = argparse.ArgumentParser()
     parser.add_argument('targets', metavar='TARGETS', nargs='+',
                         help='targets to perform reconnaissance on')

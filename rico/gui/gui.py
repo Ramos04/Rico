@@ -1,13 +1,40 @@
 import pprint
 import curses
 import re, os, sys
+from rico.util.debug import Debug
 
-# regex
-reg_ipv4 = re.compile('^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$')
-reg_ipv6 = re.compile('(([a-fA-F0-9]{1,4}|):){1,7}([a-fA-F0-9]{1,4}|:)')
-reg_domain = re.compile('^((?:([a-z0-9]\.|[a-z0-9][a-z0-9\-]{0,61}[a-z0-9])\.)+)([a-z0-9]{2,63}|(?:[a-z0-9][a-z0-9\-]{0,61}[a-z0-9]))\.?$')
-reg_email = re.compile('[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
-reg_mac = re.compile('^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$')
+class Window():
+    #def __init__(self, stdscr):
+    def __init__(self, data):
+        self.screen = curses.initscr()
+        self.data = data
+        self.height, self.width = self.screen.getyx()
+        #self.height, self.width = curses.LINES, curses.COLS
+
+    def display(self):
+        #Debug.debug_log()
+        #pprint.pprint(self.data)
+
+        self.new_win = curses.newwin(self.height, self.width, 0, 0)
+        self.new_win.border()
+
+        """
+        self.sub_greynoise = SubWindow(self.new_win, 3, 0, 'Greynoise', self.data['greynoise'])
+        self.sub_ipinfo = SubWindow(self.new_win, 3, 1, 'IP Info', self.data['ipinfo'])
+        self.sub_abuseipdb = SubWindow(self.new_win, 3, 1, 'IP Info', self.data['abuseipdb'])
+        """
+
+        self.sub_greynoise = SubWindow(self.new_win, 3, 0, 'Greynoise', 'Greynoise test')
+        self.sub_ipinfo = SubWindow(self.new_win, 3, 1, 'IP Info', 'IP Info test')
+        self.sub_abuseipdb = SubWindow(self.new_win, 3, 2, 'Abuse IPDB', 'Abuse IP DB test')
+
+        self.new_win.refresh()
+        self.sub_greynoise.display()
+        self.sub_ipinfo.display()
+        self.sub_abuseipdb.display()
+
+        curses.napms(5000)
+        curses.endwin()
 
 class SubWindow():
     def __init__(self, window, num_splits, num_pos, module, data):
@@ -43,6 +70,9 @@ class SubWindow():
 
         self.header.addstr(1, int( (self.width/2) - len(module)/2 ), module)
         count = 1
+
+        self.body.addstr(count, 1, data)
+        """
         if data:
             for k1, v1 in data.items():
 
@@ -73,37 +103,10 @@ class SubWindow():
                 else:
                     self.body.addstr(count, 1, str('{:15} : {}'.format(k1, v1)))
                     count +=1
+        """
 
     def display(self):
         self.header.refresh()
         self.body.refresh()
 
-class Window():
-    #def __init__(self, stdscr):
-    def __init__(self, options):
-        #self.screen = stdscr
-        #self.height, self.width = self.screen.getmaxyx()
-        self.height, self.width = curses.LINES, curses.COLS
-
-        greynoise = Greynoise(token_greynoise)
-        ipinfo = IPinfo(token_ipinfo)
-
-        res_greynoise = greynoise.lookup_ip_dict('61.163.145.244')
-        res_ipinfo = ipinfo.lookup_ip_dict('61.163.145.244')
-
-        self.new_win = curses.newwin(self.height, self.width, 0, 0)
-        self.new_win.border()
-
-        self.sub_greynoise = SubWindow(self.new_win, 3, 0, 'Greynoise', res_greynoise)
-        self.sub_ipinfo = SubWindow(self.new_win, 3, 1, 'IP Info', res_ipinfo)
-
-        self.new_win.refresh()
-        self.sub_greynoise.display()
-        self.sub_ipinfo.display()
-
-        curses.napms(5000)
-        curses.endwin()
-
-def main():
-    curses.wrapper(Window)
 
