@@ -25,9 +25,13 @@ class Manager():
 
     def run(self):
         Debug.debug_log()
-        for key, value in self._dict_ip.items():
-            #Parse.print_dict(value)
-            ip_window = Window(value)
-            ip_window.display()
+        for k1, v1 in self._dict_ip.items():
+            for k2, v2 in v1.items():
+                print('########################################')
+                print('# {:^38}'.format(k2))
+                print('########################################')
+                Parse.print_dict(v2)
+            #ip_window = Window(value)
+            #ip_window.display()
 
 

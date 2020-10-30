@@ -2,6 +2,7 @@ import os
 import pprint
 import requests
 import json
+import httpbl
 from  functools import reduce
 from rico.util.parse import Parse
 from rico.util.debug import Debug
@@ -17,6 +18,7 @@ class IP():
         return_dict['greynoise'] = IP._greynoise(tokens['greynoise'], target)
         return_dict['ipinfo'] = IP._ipinfo(tokens['ipinfo'], target)
         return_dict['abuseipdb'] = IP._abuseipdb(tokens['abuseipdb'], target)
+        return_dict['honeypot'] = IP._honeypot(tokens['honeypot'], target)
 
         return return_dict
 
@@ -135,3 +137,30 @@ class IP():
                 results_dict[key] = Parse.get_dict_safe(data, value)
 
         return results_dict
+
+    #########################################
+    #            Project Honeypot
+    #########################################
+    @staticmethod
+    def _honeypot(token, target):
+        results_dict = {}
+
+        bl = httpbl.HttpBL(token)
+        response = bl.query(target)
+        results_dict = response
+        #pprint.pprint(response)
+        #pprint.pprint(response)
+
+        #print('IP Address: {}'.format(ip_address)
+        #print('Threat Score: {}'.format(response['threat_score'])
+        #print('Days since last activity: {}'.format(response['days_since_last_activity'])
+        #print('Visitor type: {}'.format(', '.join([httpbl.DESCRIPTIONS[t] for t in response['type']]))
+
+        """
+        if response.status_code == 200:
+            data = response.json()
+            results_dict = data
+        """
+
+        return results_dict
+
