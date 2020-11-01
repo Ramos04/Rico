@@ -20,12 +20,75 @@ class IP():
         return_dict['abuseipdb'] = IP._abuseipdb(tokens['abuseipdb'], target)
         return_dict['honeypot'] = IP._honeypot(tokens['honeypot'], target)
         return_dict['binaryedge'] = IP._binaryedge(tokens['binaryedge'], target)
+        return_dict['virustotal'] = IP._virustotal(tokens['virustotal'], target)
 
         # currently otx is hella long, need to parse through it and grab 
         # only relevant info
         #return_dict['otx'] = IP._otx(tokens['otx'], target)
 
         return return_dict
+
+    #########################################
+    #               binaryedge
+    #########################################
+    @staticmethod
+    def _binaryedge(token, target):
+        results_dict = {}
+        url = 'https://api.binaryedge.io/v2/query/ip/' + target
+
+        headers = {
+            'accept': 'application/json',
+            'X-Key': token
+        }
+
+        response = requests.request("GET", url, headers=headers)
+
+        if response.status_code == 200:
+            data = response.json()
+            results_dict = data
+
+        return results_dict
+
+    #########################################
+    #               AbuseIPDB
+    #########################################
+    @staticmethod
+    def _abuseipdb(token, target):
+        results_dict = {}
+        key_dict = {
+            'IP Address'    : 'data.ipAddress',
+            'Confidence'    : 'data.abuseConfidenceScore',
+            'Domain'        : 'data.domain',
+            'Usage Type'    : 'data.usageType',
+            'Total Reports' : 'data.totalReports',
+            'Last Report'   : 'data.lastReportedAt',
+            'Public'        : 'data.isPublic',
+            'Whitelisted'   : 'data.isWhitelisted',
+            'Hostnames'     : 'data.hostnames',
+            'User Count'    : 'data.numDistinctUsers'
+            }
+
+        url = 'https://api.abuseipdb.com/api/v2/check'
+
+        querystring = {
+            'ipAddress': target,
+            'maxAgeInDays': '90'
+        }
+
+        headers = {
+            'Accept': 'application/json',
+            'Key': token
+        }
+
+        response = requests.request(method='GET', url=url, headers=headers, params=querystring)
+
+        if response.status_code == 200:
+            data = response.json()
+
+            for key, value in key_dict.items():
+                results_dict[key] = Parse.get_dict_safe(data, value)
+
+        return results_dict
 
     #########################################
     #               Greynoise
@@ -102,44 +165,34 @@ class IP():
                 results_dict[key] = Parse.get_dict_safe(data, value)
 
         return results_dict
+
     #########################################
-    #               AbuseIPDB
+    #                 OTX
     #########################################
     @staticmethod
-    def _abuseipdb(token, target):
+    def _otx(token, target):
         results_dict = {}
-        key_dict = {
-            'IP Address'    : 'data.ipAddress',
-            'Confidence'    : 'data.abuseConfidenceScore',
-            'Domain'        : 'data.domain',
-            'Usage Type'    : 'data.usageType',
-            'Total Reports' : 'data.totalReports',
-            'Last Report'   : 'data.lastReportedAt',
-            'Public'        : 'data.isPublic',
-            'Whitelisted'   : 'data.isWhitelisted',
-            'Hostnames'     : 'data.hostnames',
-            'User Count'    : 'data.numDistinctUsers'
+
+        urls = {
+                'general' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/general',
+                'reputation' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/reputation',
+                'geo' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/geo',
+                'malware' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/malware',
+                'url_list' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/url_list',
+                'passive_dns' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/passive_dns',
+                'http_scans' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/http_scans'
             }
 
-        url = 'https://api.abuseipdb.com/api/v2/check'
-
-        querystring = {
-            'ipAddress': target,
-            'maxAgeInDays': '90'
-        }
-
         headers = {
-            'Accept': 'application/json',
-            'Key': token
+            'X-OTX-API-KEY': token,
+            'Content-Type': 'application/json'
         }
 
-        response = requests.request(method='GET', url=url, headers=headers, params=querystring)
-
-        if response.status_code == 200:
+        for key, value in urls.items():
+            response = requests.request('GET', value, headers=headers)
             data = response.json()
 
-            for key, value in key_dict.items():
-                results_dict[key] = Parse.get_dict_safe(data, value)
+            results_dict[key] = data
 
         return results_dict
 
@@ -170,61 +223,34 @@ class IP():
         return results_dict
 
     #########################################
-    #                 OTX
+    #              VirusTotal
     #########################################
     @staticmethod
-    def _otx(token, target):
+    def _virustotal(token, target):
         results_dict = {}
 
-        url = 'https://api.abuseipdb.com/api/v2/check'
+        url = 'https://www.virustotal.com/api/v3/ip_addresses/' + target
 
-        urls = {
-                'general' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/general',
-                'reputation' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/reputation',
-                'geo' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/geo',
-                'malware' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/malware',
-                'url_list' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/url_list',
-                'passive_dns' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/passive_dns',
-                'http_scans' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/http_scans'
-            }
-
-        headers = {
-            'X-OTX-API-KEY': token,
-            'Content-Type': 'application/json'
-        }
-
-        for key, value in urls.items():
-            response = requests.request('GET', value, headers=headers)
-            data = response.json()
-
-            results_dict[key] = data
-
-            #print('####################')
-            #print('# ' + key)
-            #print('####################')
-            #pprint.pprint(data)
-
-            #results_dict[key] = data
-
-        return results_dict
-
-    #########################################
-    #               binaryedge
-    #########################################
-    @staticmethod
-    def _binaryedge(token, target):
-        results_dict = {}
-        url = 'https://api.binaryedge.io/v2/query/ip/' + target
+        relationships = [
+                'communicating_files',
+                'downloaded_files',
+                'historical_whois',
+                'related_comments',
+                'referrer_files',
+                'resolutions',
+                'urls'
+                ]
 
         headers = {
-            'accept': 'application/json',
-            'X-Key': token
+            'x-apikey': token
         }
 
-        response = requests.request("GET", url, headers=headers)
+        response = requests.request('GET', url, headers=headers)
+        results_dict['data'] = response.json()
 
-        if response.status_code == 200:
-            data = response.json()
-            results_dict = data
+        for end_point in relationships:
+            response = requests.request('GET', url + '/' + end_point, headers=headers)
+
+            results_dict[end_point] = response.json()
 
         return results_dict

@@ -8,7 +8,8 @@ class Config():
         'honeypot'   : 'mvnkktsksijp',
         'hostio'     : '635a1e072c38a9',
         'ipinfo'     : '28e4e00f2aa4b5',
-        'otx'        : '52d45e6bdc159b631497b17871e726ad1abcf16b88baa4dba3e70e3aaa232c19'
+        'otx'        : '52d45e6bdc159b631497b17871e726ad1abcf16b88baa4dba3e70e3aaa232c19',
+        'virustotal' : 'f6f62416f6955533b8c3cc8e6861d4479ae2e0a41bf44ca12ecbb2f8f650698d'
         }
 
 
