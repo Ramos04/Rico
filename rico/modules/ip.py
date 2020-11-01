@@ -19,6 +19,11 @@ class IP():
         return_dict['ipinfo'] = IP._ipinfo(tokens['ipinfo'], target)
         return_dict['abuseipdb'] = IP._abuseipdb(tokens['abuseipdb'], target)
         return_dict['honeypot'] = IP._honeypot(tokens['honeypot'], target)
+        return_dict['binaryedge'] = IP._binaryedge(tokens['binaryedge'], target)
+
+        # currently otx is hella long, need to parse through it and grab 
+        # only relevant info
+        #return_dict['otx'] = IP._otx(tokens['otx'], target)
 
         return return_dict
 
@@ -164,3 +169,62 @@ class IP():
 
         return results_dict
 
+    #########################################
+    #                 OTX
+    #########################################
+    @staticmethod
+    def _otx(token, target):
+        results_dict = {}
+
+        url = 'https://api.abuseipdb.com/api/v2/check'
+
+        urls = {
+                'general' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/general',
+                'reputation' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/reputation',
+                'geo' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/geo',
+                'malware' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/malware',
+                'url_list' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/url_list',
+                'passive_dns' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/passive_dns',
+                'http_scans' : 'https://otx.alienvault.com/api/v1/indicators/IPv4/' + target + '/http_scans'
+            }
+
+        headers = {
+            'X-OTX-API-KEY': token,
+            'Content-Type': 'application/json'
+        }
+
+        for key, value in urls.items():
+            response = requests.request('GET', value, headers=headers)
+            data = response.json()
+
+            results_dict[key] = data
+
+            #print('####################')
+            #print('# ' + key)
+            #print('####################')
+            #pprint.pprint(data)
+
+            #results_dict[key] = data
+
+        return results_dict
+
+    #########################################
+    #               binaryedge
+    #########################################
+    @staticmethod
+    def _binaryedge(token, target):
+        results_dict = {}
+        url = 'https://api.binaryedge.io/v2/query/ip/' + target
+
+        headers = {
+            'accept': 'application/json',
+            'X-Key': token
+        }
+
+        response = requests.request("GET", url, headers=headers)
+
+        if response.status_code == 200:
+            data = response.json()
+            results_dict = data
+
+        return results_dict

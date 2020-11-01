@@ -3,6 +3,7 @@ from rico.util.debug import Debug
 
 class Parse():
 
+    """
     @staticmethod
     def print_dict(data, count=0):
         if type(data) is dict:
@@ -22,6 +23,7 @@ class Parse():
                     print_dict(item, (count+1))
                 else:
                     print('{:^{spacing}}{:15}'.format('', item, spacing=str(count*4)))
+    """
 
     @staticmethod
     def get_dict_safe(dictionary, keys, default=None):
@@ -32,9 +34,8 @@ class Parse():
         if type(data) is dict:
             for key, value in data.items():
                 if type(value) is dict:
-                    print('{:^{spacing}}{:15} :'.format('', key, spacing=str(count*4)))
+                    print('{:^{spacing}}{:15}'.format('', key, spacing=str(count*4)))
                     Parse.print_dict(value, (count+1))
-
                 elif type(value) is list :
                     Parse.print_dict(value, (count+1))
                 else:
