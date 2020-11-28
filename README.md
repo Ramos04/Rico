@@ -1,2 +1,2 @@
-# recon
-Python program for querying info 
+# Rico
+My attempt at creating the all in one SOC analyst tool
